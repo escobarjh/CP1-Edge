@@ -1,0 +1,46 @@
+// Definição dos pinos usados no Arduino
+const int PIN_LED_VERDE    = 8;   // LED verde indica condições ideais de luz
+const int PIN_LED_AMARELO  = 2;  // LED amarelo indica condição de alerta
+const int PIN_LED_VERMELHO = 3;   // LED vermelho indica condição crítica
+const int PIN_BUZZER       = 5;  // Buzzer para sinal sonoro de alerta
+ 
+void setup() {
+  Serial.begin(9600);                // Inicia comunicação serial a 9600 bps
+  pinMode(PIN_LED_VERDE,    OUTPUT);
+  pinMode(PIN_LED_AMARELO,  OUTPUT);
+  pinMode(PIN_LED_VERMELHO, OUTPUT);
+  pinMode(PIN_BUZZER,       OUTPUT);
+}
+ 
+void loop() {
+  int leituraLDR = analogRead(A0);  // Captura valor do sensor LDR (0 a 1023)
+  Serial.println(leituraLDR);       // Exibe valor no Monitor Serial
+ 
+ // Se a luminosidade estiver acima de 600 → estado critico
+  if (leituraLDR <= 250) {
+    digitalWrite(PIN_LED_VERDE,    LOW);
+    digitalWrite(PIN_LED_AMARELO,  LOW);
+    digitalWrite(PIN_LED_VERMELHO, HIGH);
+    digitalWrite(PIN_BUZZER,       HIGH);
+ 
+  // Se estiver entre 251 e 600 → alerta moderado
+  } else if (leituraLDR <= 600) {
+    digitalWrite(PIN_LED_VERDE,    LOW);
+    digitalWrite(PIN_LED_AMARELO,  HIGH);
+    digitalWrite(PIN_LED_VERMELHO, LOW);
+    digitalWrite(PIN_BUZZER,       LOW);
+ 
+   // Se a luminosidade estiver até 250 → condição ideal
+  } else {
+    digitalWrite(PIN_LED_VERDE,    HIGH);
+    digitalWrite(PIN_LED_AMARELO,  LOW);
+    digitalWrite(PIN_LED_VERMELHO, LOW);
+    // Emite um bip de 250 Hz por 200 ms e pausa de 300 ms
+    tone(PIN_BUZZER, 250);
+    delay(200);
+    noTone(PIN_BUZZER);
+    delay(300);
+  }
+ 
+  delay(100);  // Pequeno intervalo antes da próxima leitura
+}
